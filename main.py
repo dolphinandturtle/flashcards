@@ -75,8 +75,8 @@ class Game:
         return [card.dump() for card in self.deck]
 
     def hit(self):
-        self.offdeck.append(self.deck.pop(self.choice))
         self.deck[self.choice].true += 1
+        self.offdeck.append(self.deck.pop(self.choice))
             
     def miss(self):
         self.deck[self.choice].false += 1
@@ -134,30 +134,31 @@ while True:
                 surf_image.blit(inter.image(game.card.back), (0, 0))
             elif not question and event.key == pg.K_t:
                 question = not question
+                game.hit()
+                # End condition
+                if len(game.deck) == 0:
+                    print("Gg. You won!")
+                    pg.quit()
+                    exit()
                 game.choose()
                 surf_image.blit(inter.image(game.card.front), (0, 0))
-                game.hit()
                 inter.save(game.dump())
                 timer = 0
             elif not question and event.key == pg.K_f:
                 question = not question
+                game.miss()
                 game.choose()
                 surf_image.blit(inter.image(game.card.front), (0, 0))
-                game.miss()
                 inter.save(game.dump())
                 timer = 0
 
     # timer-limit
     if timer > TIMEOUT:
         timer = 0
+        game.miss()
         game.choose()
         surf_image.blit(inter.image(game.card.front), (0, 0))
-        game.miss()
         inter.save(game.dump())
-
-    # End condition
-    if len(game.deck) == 0:
-        print("Gg. You won!")
 
     screen.fill(BACKGROUND)
 
