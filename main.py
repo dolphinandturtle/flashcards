@@ -1,9 +1,10 @@
+from sys import argv
 import pygame as pg
 import json
 from random import random
 
 
-TIMEOUT = 3
+TIMEOUT = 120
 SIZE = WIDTH, HEIGHT = 800, 600
 
 # Colors
@@ -26,18 +27,18 @@ surf_card.fill(CARD)
 surf_image = pg.Surface((WIDTH*0.5, HEIGHT*0.5))
 surf_image.fill(CARD)
 
-PATH_DECK = "deck.json"
-with open(PATH_DECK, "r") as file:
+PATH_DECK = argv[1]
+with open(f"{PATH_DECK}/index.json", "r") as file:
     deck = json.load(file)
 # backup file
-with open("." + PATH_DECK, "w") as file:
+with open(f"{PATH_DECK}/.index.json", "w") as file:
     json.dump(deck, file, indent=2)
 
 timer = 0
 
 question = True
-choice = round(random())
-image = pg.image.load(deck[choice]["question" if question else "answer"]).convert()
+choice = round(len(deck) * random())
+image = pg.image.load(PATH_DECK + '/' + deck[choice]["question" if question else "answer"]).convert()
 surf_image.blit(pg.transform.smoothscale(image, (WIDTH*0.5, HEIGHT*0.5)), (0, 0))
 
 
@@ -45,37 +46,41 @@ while True:
     for event in pg.event.get():
         if event.type == pg.KEYDOWN:
             if event.key == pg.K_ESCAPE:
-                with open(PATH_DECK, "w") as file:
-                    json.dump(deck, file, indent=2)
                 pg.quit()
                 exit()
             elif question and event.key == pg.K_SPACE:
                 question = not question
-                choice = round(random())
-                image = pg.image.load(deck[choice]["question" if question else "answer"]).convert()
+                choice = round(len(deck) * random())
+                image = pg.image.load(PATH_DECK + '/' + deck[choice]["question" if question else "answer"]).convert()
                 surf_image.blit(pg.transform.smoothscale(image, (WIDTH*0.5, HEIGHT*0.5)), (0, 0))
             elif not question and event.key == pg.K_t:
                 question = not question
-                choice = round(random())
-                image = pg.image.load(deck[choice]["question" if question else "answer"]).convert()
+                choice = round(len(deck) * random())
+                image = pg.image.load(PATH_DECK + '/' + deck[choice]["question" if question else "answer"]).convert()
                 surf_image.blit(pg.transform.smoothscale(image, (WIDTH*0.5, HEIGHT*0.5)), (0, 0))
                 deck[choice]["true"] += 1
+                with open(f"{PATH_DECK}/index.json", "w") as file:
+                    json.dump(deck, file, indent=4)
                 timer = 0
             elif not question and event.key == pg.K_f:
                 question = not question
-                choice = round(random())
-                image = pg.image.load(deck[choice]["question" if question else "answer"]).convert()
+                choice = round(len(deck) * random())
+                image = pg.image.load(PATH_DECK + '/' + deck[choice]["question" if question else "answer"]).convert()
                 surf_image.blit(pg.transform.smoothscale(image, (WIDTH*0.5, HEIGHT*0.5)), (0, 0))
                 deck[choice]["false"] += 1
+                with open(f"{PATH_DECK}/index.json", "w") as file:
+                    json.dump(deck, file, indent=4)
                 timer = 0
 
     # timer-limit
     if timer > TIMEOUT:
         timer = 0
-        choice = round(random())
-        image = pg.image.load(deck[choice]["question" if question else "answer"]).convert()
+        choice = round(len(deck) * random())
+        image = pg.image.load(PATH_DECK + '/' + deck[choice]["question" if question else "answer"]).convert()
         surf_image.blit(pg.transform.smoothscale(image, (WIDTH*0.5, HEIGHT*0.5)), (0, 0))
         deck[choice]["false"] += 1
+        with open(f"{PATH_DECK}/index.json", "w") as file:
+            json.dump(deck, file, indent=4)
 
     screen.fill(BACKGROUND)
 

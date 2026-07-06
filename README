@@ -20,4 +20,11 @@ python main.py deck.json session_time max_single_time
 3) Everytime a session is loaded
 
 4) This script requires to "pip install pygame-ce" (yes the
-   community edition because the other is unstable idk why)
+   community edition because the other is unstable idk why).
+
+5) Decks are folders with a bunch of images and a 'index.json'
+   file that discriminates front and back images with a true
+   and false score indicative of their history.
+
+6) I created this program on the fly because I need to pass
+   my laboratory exam, to avoid death by hanging (by the balls).
