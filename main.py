@@ -37,7 +37,7 @@ with open(f"{PATH_DECK}/.index.json", "w") as file:
 timer = 0
 
 question = True
-choice = round(len(deck) * random())
+choice = round((len(deck) - 1) * random())
 image = pg.image.load(PATH_DECK + '/' + deck[choice]["question" if question else "answer"]).convert()
 surf_image.blit(pg.transform.smoothscale(image, (WIDTH*0.5, HEIGHT*0.5)), (0, 0))
 
@@ -54,7 +54,7 @@ while True:
                 surf_image.blit(pg.transform.smoothscale(image, (WIDTH*0.5, HEIGHT*0.5)), (0, 0))
             elif not question and event.key == pg.K_t:
                 question = not question
-                choice = round(len(deck) * random())
+                choice = round((len(deck) - 1) * random())
                 image = pg.image.load(PATH_DECK + '/' + deck[choice]["question" if question else "answer"]).convert()
                 surf_image.blit(pg.transform.smoothscale(image, (WIDTH*0.5, HEIGHT*0.5)), (0, 0))
                 deck[choice]["true"] += 1
@@ -63,7 +63,7 @@ while True:
                 timer = 0
             elif not question and event.key == pg.K_f:
                 question = not question
-                choice = round(len(deck) * random())
+                choice = round((len(deck) - 1) * random())
                 image = pg.image.load(PATH_DECK + '/' + deck[choice]["question" if question else "answer"]).convert()
                 surf_image.blit(pg.transform.smoothscale(image, (WIDTH*0.5, HEIGHT*0.5)), (0, 0))
                 deck[choice]["false"] += 1
@@ -74,7 +74,7 @@ while True:
     # timer-limit
     if timer > TIMEOUT:
         timer = 0
-        choice = round(len(deck) * random())
+        choice = round((len(deck) - 1) * random())
         image = pg.image.load(PATH_DECK + '/' + deck[choice]["question" if question else "answer"]).convert()
         surf_image.blit(pg.transform.smoothscale(image, (WIDTH*0.5, HEIGHT*0.5)), (0, 0))
         deck[choice]["false"] += 1
