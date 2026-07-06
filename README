@@ -1,0 +1,20 @@
+###########
+## USAGE ##
+###########
+
+Launch the program by typing the following in the terminal
+python main.py deck.json session_time max_single_time
+(warning as of right now main.py doesn't take any arguments)
+
+#############
+## DETAILS ##
+#############
+
+1) On Linux pygame has a ridiculous bug. It has to
+   do with the importing of Font module. You have to
+   fix the pygame source manually.
+
+2) The lorem directory contains some test images for ease
+   of prototyping and testing.
+
+3) Everytime a session is loaded
