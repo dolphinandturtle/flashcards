@@ -18,3 +18,6 @@ python main.py deck.json session_time max_single_time
    of prototyping and testing.
 
 3) Everytime a session is loaded
+
+4) This script requires to "pip install pygame-ce" (yes the
+   community edition because the other is unstable idk why)
