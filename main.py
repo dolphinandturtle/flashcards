@@ -58,6 +58,7 @@ class Interface:
 @dataclass(slots=True)
 class Game:
     deck: list[Card]
+    offdeck: list[Card]
     choice: int
 
     @property
@@ -68,12 +69,13 @@ class Game:
     def load(cls, dict_deck: dict):
         deck = [Card.load(dict_card) for dict_card in dict_deck]
         choice = cls.static_choose(len(deck))
-        return cls(deck, choice)
+        return cls(deck, [], choice)
             
     def dump(self):
         return [card.dump() for card in self.deck]
 
     def hit(self):
+        self.offdeck.append(self.deck.pop(self.choice))
         self.deck[self.choice].true += 1
             
     def miss(self):
@@ -124,6 +126,7 @@ while True:
     for event in pg.event.get():
         if event.type == pg.KEYDOWN:
             if event.key == pg.K_ESCAPE:
+                print(f"Progressed {len(game.offdeck)}/{len(game.deck) + len(game.offdeck)} cards")
                 pg.quit()
                 exit()
             elif question and event.key == pg.K_SPACE:
@@ -151,6 +154,10 @@ while True:
         surf_image.blit(inter.image(game.card.front), (0, 0))
         game.miss()
         inter.save(game.dump())
+
+    # End condition
+    if len(game.deck) == 0:
+        print("Gg. You won!")
 
     screen.fill(BACKGROUND)
 
