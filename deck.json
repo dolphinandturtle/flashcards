@@ -1,16 +1,14 @@
 [
   {
-    "question": "lorem/bird.jpg",
-    "answer": "lorem/blow.jpg",
+    "front": "lorem/bird.jpg",
+    "back": "lorem/blow.jpg",
     "true": 2,
-    "false": 8,
-    "last": 0
+    "false": 8
   },
   {
-    "question": "lorem/water.jpg",
-    "answer": "lorem/station.jpg",
+    "front": "lorem/water.jpg",
+    "back": "lorem/station.jpg",
     "true": 1,
-    "false": 9,
-    "last": 0
+    "false": 9
   }
 ]
