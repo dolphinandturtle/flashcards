@@ -3,6 +3,13 @@ import pygame as pg
 import json
 from random import random
 from dataclasses import dataclass, field
+from enum import Enum, auto
+
+
+class State(Enum):
+    READING = auto()
+    REVISING = auto()
+    TIMEOUT = auto()
 
 
 @dataclass(slots=True)
@@ -72,7 +79,7 @@ class Game:
         return cls(deck, [], choice)
             
     def dump(self):
-        return [card.dump() for card in self.deck]
+        return [card.dump() for card in self.deck + self.offdeck]
 
     def hit(self):
         self.deck[self.choice].true += 1
@@ -117,48 +124,66 @@ inter = Interface(WIDTH, HEIGHT, root=argv[1])
 game = Game.load(inter.load())
 
 timer = 0
-question = True
+state = State.READING
 game.choose()
 surf_image.blit(inter.image(game.card.front), (0, 0))
 
 
 while True:
-    for event in pg.event.get():
-        if event.type == pg.KEYDOWN:
-            if event.key == pg.K_ESCAPE:
-                print(f"Progressed {len(game.offdeck)}/{len(game.deck) + len(game.offdeck)} cards")
-                pg.quit()
-                exit()
-            elif question and event.key == pg.K_SPACE:
-                question = not question
-                surf_image.blit(inter.image(game.card.back), (0, 0))
-            elif not question and event.key == pg.K_t:
-                question = not question
-                game.hit()
-                # End condition
-                if len(game.deck) == 0:
-                    print("Gg. You won!")
+    match state:
+        case State.READING:
+            for event in pg.event.get():
+                if event.type == pg.KEYDOWN and event.key == pg.K_ESCAPE:
+                    print(f"Progressed {len(game.offdeck)}/{len(game.deck) + len(game.offdeck)} cards")
                     pg.quit()
                     exit()
-                game.choose()
-                surf_image.blit(inter.image(game.card.front), (0, 0))
-                inter.save(game.dump())
-                timer = 0
-            elif not question and event.key == pg.K_f:
-                question = not question
-                game.miss()
-                game.choose()
-                surf_image.blit(inter.image(game.card.front), (0, 0))
-                inter.save(game.dump())
-                timer = 0
+                elif event.type == pg.KEYDOWN and event.key == pg.K_SPACE:
+                    surf_image.blit(inter.image(game.card.back), (0, 0))
+                    state = State.REVISING
 
-    # timer-limit
+        case State.REVISING:
+            for event in pg.event.get():
+                if event.type == pg.KEYDOWN and event.key == pg.K_ESCAPE:
+                    print(f"Progressed {len(game.offdeck)}/{len(game.deck) + len(game.offdeck)} cards")
+                    pg.quit()
+                    exit()
+                elif event.type == pg.KEYDOWN and event.key == pg.K_t:
+                    game.hit()
+                    # End condition
+                    if len(game.deck) == 0:
+                        print("Gg. You won!")
+                        pg.quit()
+                        exit()
+                    game.choose()
+                    surf_image.blit(inter.image(game.card.front), (0, 0))
+                    inter.save(game.dump())
+                    timer = 0
+                    state = State.READING
+                elif event.type == pg.KEYDOWN and event.key == pg.K_f:
+                    game.miss()
+                    game.choose()
+                    surf_image.blit(inter.image(game.card.front), (0, 0))
+                    inter.save(game.dump())
+                    timer = 0
+                    state = State.READING
+
+        case State.TIMEOUT:
+            for event in pg.event.get():
+                if event.type == pg.KEYDOWN and event.key == pg.K_ESCAPE:
+                    print(f"Progressed {len(game.offdeck)}/{len(game.deck) + len(game.offdeck)} cards")
+                    pg.quit()
+                    exit()
+                elif event.type == pg.KEYDOWN and event.key == pg.K_SPACE:
+                    game.miss()
+                    game.choose()
+                    surf_image.blit(inter.image(game.card.front), (0, 0))
+                    inter.save(game.dump())
+                    timer = 0
+                    state = State.READING
+
+    # independent transition
     if timer > TIMEOUT:
-        timer = 0
-        game.miss()
-        game.choose()
-        surf_image.blit(inter.image(game.card.front), (0, 0))
-        inter.save(game.dump())
+        state = State.TIMEOUT
 
     screen.fill(BACKGROUND)
 
@@ -172,7 +197,9 @@ while True:
     surf_timer.blit(calibri.render(f"{int(timer)}", antialias=True, color=TEXT), (0, 0))
     screen.blit(surf_timer, (120, 100))
 
+    match state:
+        case State.READING:
+            timer += 1/30
+
     pg.display.update()
     clock.tick(30)
-    if question:
-        timer += 1/30
