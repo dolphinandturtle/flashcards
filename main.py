@@ -50,7 +50,6 @@ while True:
                 exit()
             elif question and event.key == pg.K_SPACE:
                 question = not question
-                choice = round(len(deck) * random())
                 image = pg.image.load(PATH_DECK + '/' + deck[choice]["question" if question else "answer"]).convert()
                 surf_image.blit(pg.transform.smoothscale(image, (WIDTH*0.5, HEIGHT*0.5)), (0, 0))
             elif not question and event.key == pg.K_t:
