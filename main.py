@@ -44,9 +44,14 @@ class Interface:
     root: str
 
     def image(self, path: str):
-        return pg.transform.smoothscale(
+        image = pg.image.load(f"{self.root}/{path}").convert()
+        f = min(
+            (self.width * 0.5) / image.get_width(),
+            (self.height * 0.5) / image.get_height()
+        )
+        return pg.transform.smoothscale_by(
             pg.image.load(f"{self.root}/{path}").convert(),
-            (self.width*0.5, self.height*0.5)
+            (f, f)
         )
 
     def load(self):
@@ -194,7 +199,7 @@ while True:
     screen.blit(surf_image, (180, 140))
 
     surf_timer.fill(CARD)
-    surf_timer.blit(calibri.render(f"{int(timer)}", antialias=True, color=TEXT), (0, 0))
+    surf_timer.blit(calibri.render(f"{TIMEOUT - int(timer)}", antialias=True, color=TEXT), (0, 0))
     screen.blit(surf_timer, (120, 100))
 
     match state:
