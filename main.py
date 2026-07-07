@@ -131,6 +131,7 @@ game = Game.load(inter.load())
 timer = 0
 state = State.READING
 game.choose()
+surf_image.fill(CARD)
 surf_image.blit(inter.image(game.card.front), (0, 0))
 
 
@@ -143,6 +144,7 @@ while True:
                     pg.quit()
                     exit()
                 elif event.type == pg.KEYDOWN and event.key == pg.K_SPACE:
+                    surf_image.fill(CARD)
                     surf_image.blit(inter.image(game.card.back), (0, 0))
                     state = State.REVISING
 
@@ -160,6 +162,7 @@ while True:
                         pg.quit()
                         exit()
                     game.choose()
+                    surf_image.fill(CARD)
                     surf_image.blit(inter.image(game.card.front), (0, 0))
                     inter.save(game.dump())
                     timer = 0
@@ -167,6 +170,7 @@ while True:
                 elif event.type == pg.KEYDOWN and event.key == pg.K_f:
                     game.miss()
                     game.choose()
+                    surf_image.fill(CARD)
                     surf_image.blit(inter.image(game.card.front), (0, 0))
                     inter.save(game.dump())
                     timer = 0
@@ -181,6 +185,7 @@ while True:
                 elif event.type == pg.KEYDOWN and event.key == pg.K_SPACE:
                     game.miss()
                     game.choose()
+                    surf_image.fill(CARD)
                     surf_image.blit(inter.image(game.card.front), (0, 0))
                     inter.save(game.dump())
                     timer = 0
