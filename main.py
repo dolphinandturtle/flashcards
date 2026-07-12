@@ -18,6 +18,7 @@ class Card:
     back: str
     true: int
     false: int
+    interval: int
 
     @classmethod
     def load(cls, dict_card: dict):
@@ -25,7 +26,8 @@ class Card:
             dict_card["front"],
             dict_card["back"],
             dict_card["true"],
-            dict_card["false"]
+            dict_card["false"],
+            dict_card["interval"]
         )
 
     def dump(self):
@@ -33,7 +35,8 @@ class Card:
             "front": self.front,
             "back": self.back,
             "true": self.true,
-            "false": self.false
+            "false": self.false,
+            "interval": self.interval
         }
 
 
@@ -88,9 +91,11 @@ class Game:
 
     def hit(self):
         self.deck[self.choice].true += 1
+        self.deck[self.choice].interval /= 2
         self.offdeck.append(self.deck.pop(self.choice))
             
     def miss(self):
+        self.deck[self.choice].interval *= 3/2
         self.deck[self.choice].false += 1
             
     def choose(self):
@@ -102,7 +107,6 @@ class Game:
         return round((lenght - 1) * random())
 
 
-TIMEOUT = 120
 SIZE = WIDTH, HEIGHT = 800, 600
 
 # Colors
@@ -111,18 +115,19 @@ CARD = "#ffffff"
 TEXT = "#000000"
 
 pg.init()
-calibri = pg.font.SysFont("Calibri", 24)
+calibri = pg.font.SysFont("Calibri", 52)
 pg.display.set_caption("Flashcards")
-screen = pg.display.set_mode(SIZE)
+screen = pg.display.set_mode((0, 0), pg.FULLSCREEN)
+WIDTH, HEIGHT = screen.get_size()
 clock = pg.time.Clock()
 
 surf_timer = pg.Surface((WIDTH*0.1, HEIGHT*0.1))
 surf_timer.fill(CARD)
 
-surf_card = pg.Surface((WIDTH*0.666, HEIGHT*0.666))
+surf_card = pg.Surface((WIDTH*0.7, HEIGHT*0.7))
 surf_card.fill(CARD)
 
-surf_image = pg.Surface((WIDTH*0.5, HEIGHT*0.5))
+surf_image = pg.Surface((WIDTH*0.7, HEIGHT*0.7))
 surf_image.fill(CARD)
 
 inter = Interface(WIDTH, HEIGHT, root=argv[1])
@@ -192,20 +197,22 @@ while True:
                     state = State.READING
 
     # independent transition
-    if timer > TIMEOUT:
+    if timer > game.card.interval:
+        surf_image.fill(CARD)
+        surf_image.blit(inter.image(game.card.back), (0, 0))
         state = State.TIMEOUT
 
     screen.fill(BACKGROUND)
 
+    surf_timer.fill(CARD)
+    surf_timer.blit(calibri.render(f"{game.card.interval - int(timer)}", antialias=True, color=TEXT), (0, 0))
+    screen.blit(surf_timer, (0, 0))
+
     # Needs centering
-    screen.blit(surf_card, (120, 100))
+    screen.blit(surf_card, (180, 140))
 
     # Needs centering
     screen.blit(surf_image, (180, 140))
-
-    surf_timer.fill(CARD)
-    surf_timer.blit(calibri.render(f"{TIMEOUT - int(timer)}", antialias=True, color=TEXT), (0, 0))
-    screen.blit(surf_timer, (120, 100))
 
     match state:
         case State.READING:
