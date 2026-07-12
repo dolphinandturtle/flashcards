@@ -1,7 +1,7 @@
 from sys import argv
 import pygame as pg
 import json
-from random import random
+import random
 from dataclasses import dataclass, field
 from enum import Enum, auto
 
@@ -83,7 +83,7 @@ class Game:
     @classmethod
     def load(cls, dict_deck: dict):
         deck = [Card.load(dict_card) for dict_card in dict_deck]
-        choice = cls.static_choose(len(deck))
+        choice = round((len(deck) - 1) * random.random())
         return cls(deck, [], choice)
             
     def dump(self):
@@ -97,14 +97,12 @@ class Game:
     def miss(self):
         self.deck[self.choice].interval *= 3/2
         self.deck[self.choice].false += 1
-            
-    def choose(self):
-        self.choice = self.static_choose(len(self.deck))
-        return self.choice
 
-    @staticmethod
-    def static_choose(lenght: int):
-        return round((lenght - 1) * random())
+    def choose(self):
+        population = range(len(self.deck))
+        weights = [(card.false + 1) / (card.true + 1) for card in self.deck]
+        self.choice = random.choices(population, weights)[0]
+        return self.choice
 
 
 SIZE = WIDTH, HEIGHT = 800, 600
@@ -124,10 +122,12 @@ clock = pg.time.Clock()
 surf_timer = pg.Surface((WIDTH*0.1, HEIGHT*0.1))
 surf_timer.fill(CARD)
 
-surf_card = pg.Surface((WIDTH*0.7, HEIGHT*0.7))
+card_size = card_width, card_height = WIDTH*0.8, HEIGHT*0.8
+surf_card = pg.Surface(card_size)
 surf_card.fill(CARD)
 
-surf_image = pg.Surface((WIDTH*0.7, HEIGHT*0.7))
+image_size = image_width, image_height = WIDTH*0.8, HEIGHT*0.8
+surf_image = pg.Surface((WIDTH*0.8, HEIGHT*0.8))
 surf_image.fill(CARD)
 
 inter = Interface(WIDTH, HEIGHT, root=argv[1])
@@ -209,10 +209,14 @@ while True:
     screen.blit(surf_timer, (0, 0))
 
     # Needs centering
-    screen.blit(surf_card, (180, 140))
+    x = (WIDTH - card_width)/2
+    y = (HEIGHT - card_height)/2
+    screen.blit(surf_card, (x, y))
 
     # Needs centering
-    screen.blit(surf_image, (180, 140))
+    x = (WIDTH - image_width)/2
+    y = (HEIGHT - image_height)/2
+    screen.blit(surf_image, (x, y))
 
     match state:
         case State.READING:
