@@ -19,6 +19,7 @@ class Card:
     true: int
     false: int
     interval: int
+    last_occurence: int
 
     @classmethod
     def load(cls, dict_card: dict):
@@ -27,7 +28,8 @@ class Card:
             dict_card["back"],
             dict_card["true"],
             dict_card["false"],
-            dict_card["interval"]
+            dict_card["interval"],
+            0
         )
 
     def dump(self):
@@ -77,6 +79,7 @@ class Game:
     deck: list[Card]
     offdeck: list[Card]
     choice: int
+    rounds: int
 
     @property
     def card(self):
@@ -86,7 +89,7 @@ class Game:
     def load(cls, dict_deck: dict):
         deck = [Card.load(dict_card) for dict_card in dict_deck]
         choice = round((len(deck) - 1) * random.random())
-        return cls(deck, [], choice)
+        return cls(deck, [], choice, 0)
             
     def dump(self):
         return [card.dump() for card in self.deck + self.offdeck]
@@ -102,8 +105,12 @@ class Game:
 
     def choose(self):
         population = range(len(self.deck))
-        weights = [(card.false + 1) / (card.true + 1) for card in self.deck]
+        weights = [
+            (self.rounds - card.last_occurence + 1) * (card.false + 1) / (card.true + 1)
+            for card in self.deck
+        ]
         self.choice = random.choices(population, weights)[0]
+        self.rounds += 1
         return self.choice
 
 
