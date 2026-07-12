@@ -49,8 +49,10 @@ class Interface:
     def image(self, path: str):
         image = pg.image.load(f"{self.root}/{path}").convert()
         f = min(
-            (self.width * 0.5) / image.get_width(),
-            (self.height * 0.5) / image.get_height()
+            # These scaling parameters 0.8 depend on
+            # external values... fix this
+            (self.width * 0.8) / image.get_width(),
+            (self.height * 0.8) / image.get_height()
         )
         return pg.transform.smoothscale_by(
             pg.image.load(f"{self.root}/{path}").convert(),
