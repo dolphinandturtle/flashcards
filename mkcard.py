@@ -59,7 +59,8 @@ with open(path_index, "r") as file:
         "front": path_front.split('/')[-1],
         "back": path_back.split('/')[-1],
         "true": 0,
-        "false": 0
+        "false": 120,
+        "interval": 0
     })
 
 with open(path_index, "w") as file:
