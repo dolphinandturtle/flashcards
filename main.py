@@ -114,7 +114,7 @@ class Game:
         ]
         self.choice = random.choices(population, weights)[0]
         # Update occurences
-        self.deck[self.choice].last_occurence = 0
+        self.deck[self.choice].last_occurence = self.rounds + 1
         self.rounds += 1
         return self.choice
 
