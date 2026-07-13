@@ -94,13 +94,16 @@ class Game:
     def dump(self):
         return [card.dump() for card in self.deck + self.offdeck]
 
+    def timeout(self):
+        self.deck[self.choice].false += 1
+        self.deck[self.choice].interval *= 3/2
+
     def hit(self):
         self.deck[self.choice].true += 1
         self.deck[self.choice].interval /= 2
         self.offdeck.append(self.deck.pop(self.choice))
             
     def miss(self):
-        self.deck[self.choice].interval *= 3/2
         self.deck[self.choice].false += 1
 
     def choose(self):
@@ -110,6 +113,8 @@ class Game:
             for card in self.deck
         ]
         self.choice = random.choices(population, weights)[0]
+        # Update occurences
+        self.deck[self.choice].last_occurence = 0
         self.rounds += 1
         return self.choice
 
@@ -197,7 +202,7 @@ while True:
                     pg.quit()
                     exit()
                 elif event.type == pg.KEYDOWN and event.key == pg.K_SPACE:
-                    game.miss()
+                    game.timeout()
                     game.choose()
                     surf_image.fill(CARD)
                     surf_image.blit(inter.image(game.card.front), (0, 0))
