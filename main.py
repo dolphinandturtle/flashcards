@@ -118,6 +118,15 @@ class Game:
         self.rounds += 1
         return self.choice
 
+    def shuffle(self):
+        population = range(len(self.deck))
+        weights = [1/len(self.deck)] * len(self.deck)
+        self.choice = random.choices(population, weights)[0]
+        # Update occurences
+        self.deck[self.choice].last_occurence = self.rounds + 1
+        self.rounds += 1
+        return self.choice
+
 
 SIZE = WIDTH, HEIGHT = 800, 600
 
@@ -135,6 +144,9 @@ clock = pg.time.Clock()
 
 surf_timer = pg.Surface((WIDTH*0.1, HEIGHT*0.1))
 surf_timer.fill(CARD)
+
+surf_progress = pg.Surface((WIDTH*0.1, HEIGHT*0.1))
+surf_progress.fill(CARD)
 
 card_size = card_width, card_height = WIDTH*0.8, HEIGHT*0.8
 surf_card = pg.Surface(card_size)
@@ -166,6 +178,12 @@ while True:
                     surf_image.fill(CARD)
                     surf_image.blit(inter.image(game.card.back), (0, 0))
                     state = State.REVISING
+                elif event.type == pg.KEYDOWN and event.key == pg.K_s:
+                    game.shuffle()
+                    surf_image.fill(CARD)
+                    surf_image.blit(inter.image(game.card.front), (0, 0))
+                    timer = 0
+                    state = State.READING
 
         case State.REVISING:
             for event in pg.event.get():
@@ -220,14 +238,16 @@ while True:
 
     surf_timer.fill(CARD)
     surf_timer.blit(calibri.render(f"{game.card.interval - int(timer)}", antialias=True, color=TEXT), (0, 0))
-    screen.blit(surf_timer, (0, 0))
+    screen.blit(surf_timer, ((WIDTH - surf_timer.get_width()) / 2, 0))
 
-    # Needs centering
+    surf_progress.fill(CARD)
+    surf_progress.blit(calibri.render(f"{len(game.offdeck)}/{len(game.deck) + len(game.offdeck)}", antialias=True, color=TEXT), (0, 0))
+    screen.blit(surf_progress, (0, 0))
+
     x = (WIDTH - card_width)/2
     y = (HEIGHT - card_height)/2
     screen.blit(surf_card, (x, y))
 
-    # Needs centering
     x = (WIDTH - image_width)/2
     y = (HEIGHT - image_height)/2
     screen.blit(surf_image, (x, y))
