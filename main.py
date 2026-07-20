@@ -136,7 +136,7 @@ CARD = "#ffffff"
 TEXT = "#000000"
 
 pg.init()
-calibri = pg.font.SysFont("Calibri", 52)
+calibri = pg.font.SysFont("Calibri", 48)
 pg.display.set_caption("Flashcards")
 screen = pg.display.set_mode((0, 0), pg.FULLSCREEN)
 WIDTH, HEIGHT = screen.get_size()
