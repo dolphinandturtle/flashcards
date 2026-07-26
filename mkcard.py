@@ -10,15 +10,15 @@ from bisect import bisect_left
 pg.init()
 
 path_back = argv[1]
-if "_back.png" not in path_back:
+if "_back." not in path_back:
     exit("Invalid front image")
 text = argv[2]
 path_dir = '/'.join(path_back.split('/')[:-1])
-title = path_back.split('/')[-1].replace("_back.png", "_front.png")
+title = path_back.split('/')[-1].replace("_back.", "_front.")
 path_index = f"{path_dir}/index.json"
 path_front = f"{path_dir}/{title}"
 
-SIZE = WIDTH, HEIGHT = 800, 600
+SIZE = WIDTH, HEIGHT = 800, 450
 screen = pg.display.set_mode(SIZE)
 clock = pg.time.Clock()
 
@@ -43,7 +43,7 @@ def wraptext(msg, width):
         msg = ' '.join(words[r-1:])
     return lines
 
-font = pg.font.SysFont("Calibri", 48)
+font = pg.font.SysFont("Calibri", 36)
 
 card = pg.Surface((WIDTH*0.666, HEIGHT*0.666))
 card.fill("#ffffff")
@@ -59,8 +59,8 @@ with open(path_index, "r") as file:
         "front": path_front.split('/')[-1],
         "back": path_back.split('/')[-1],
         "true": 0,
-        "false": 120,
-        "interval": 0
+        "false": 0,
+        "interval": 120
     })
 
 with open(path_index, "w") as file:
